@@ -3,16 +3,12 @@
         
         <div class="container">
             <div class="login">
-                <h1 class="login__title">Авторизация</h1>
-                <form class="form" @submit.prevent="handleLogin">
-                    <input type="text" v-model="login" class="form__input" placeholder="Логин">
-                    <input type="password" v-model="password" class="form__input" placeholder="Пароль">
-                    <button type="submit" class="form__button">Войти</button>
+                <h1 class="login__title">Создание страны</h1>
+                <form class="form" @submit.prevent="handleCreateCountry">
+                    <input type="text" v-model="name" class="form__input" placeholder="Имя">
+                    <input type="text" v-model="vise" class="form__input" placeholder="Виза">
+                    <button type="submit" class="form__button">Создать</button>
                 </form>
-                <div class="login__bottom">
-                    <p class="login__text">Нет аккаунта?</p>
-                    <router-link to="/register" class="login__link">Зарегистрироваться</router-link>
-                </div>
             </div>
         </div>
         
@@ -20,7 +16,23 @@
 </template>
 
 <script>
-
+export default{
+    data(){
+        return{
+            name: '',
+            vise: '',
+        }
+    },
+    methods: {
+        handleCreateCountry(){
+            const country = {
+                name: this.name,
+                vise: this.vise
+            }
+            this.$store.dispatch('ADD_COUNTRY',country).then(() => {this.$router.push('/add-country')}).catch((err) => {console.error(err)});
+        }
+    }
+}
 </script>
 
 <style scoped>

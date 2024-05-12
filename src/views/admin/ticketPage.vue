@@ -3,16 +3,13 @@
         
         <div class="container">
             <div class="login">
-                <h1 class="login__title">Авторизация</h1>
-                <form class="form" @submit.prevent="handleLogin">
-                    <input type="text" v-model="login" class="form__input" placeholder="Логин">
-                    <input type="password" v-model="password" class="form__input" placeholder="Пароль">
-                    <button type="submit" class="form__button">Войти</button>
+                <h1 class="login__title">Создание билета</h1>
+                <form class="form" @submit.prevent="handleCreateTicket">
+                    <input type="text" v-model="name" class="form__input" placeholder="Название">
+                    <input type="date" v-model="date" class="form__input" placeholder="Дата">
+                    <input type="string" v-model="place" class="form__input" placeholder="место №">
+                    <button type="submit" class="form__button">Создать</button>
                 </form>
-                <div class="login__bottom">
-                    <p class="login__text">Нет аккаунта?</p>
-                    <router-link to="/register" class="login__link">Зарегистрироваться</router-link>
-                </div>
             </div>
         </div>
         
@@ -20,7 +17,25 @@
 </template>
 
 <script>
-
+export default{
+    data(){
+        return{
+            name: '',
+            date: '',
+            place: ''
+        }
+    },
+    methods: {
+        handleCreateTicket(){   
+            const ticket = {
+                name: this.name,
+                date: this.date,
+                place: this.place
+            }
+            this.$store.dispatch('ADD_TICKET',ticket).then(() => {this.$router.push('/add-ticket')});
+        }
+    }
+}
 </script>
 
 <style scoped>

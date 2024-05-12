@@ -7,7 +7,7 @@
                     <router-link to="/" class="header__link">home</router-link>
                     <router-link to="/catalog" class="header__link">catalog</router-link>
                     <router-link v-if="UserAuthed" to="/profile" class="header__link header__link-rounded"><img src="../assets/imgs/profile.svg" alt=""></router-link>
-                    <button v-if="UserAuthed" class="header__link header__link-rounded header__link-exit"><img src="../assets/imgs/exit.svg" alt=""></button>
+                    <button v-if="UserAuthed" @click="handleLogout" class="header__link header__link-rounded header__link-exit"><img src="../assets/imgs/exit.svg" alt=""></button>
                     <router-link v-if="!UserAuthed" to="/login" class="header__link header__link-rounded header__link-login"><img src="../assets/imgs/login.svg" alt=""></router-link>
                 </nav>
             </div>
@@ -23,12 +23,14 @@ export default {
             UserAuthed: null,
         }
     },
-    created(){
-        this.checkUser()
+    computed:{
+        UserAuthed(){
+            return this.$store.getters.isAuthenticated
+        },
     },
     methods: {
-        checkUser(){
-            this.UserAuthed = this.$store.getters.getToken !== null;
+        handleLogout(){
+            this.$store.dispatch('LOGOUT_USER').then(() => this.$router.push('/')).catch((err) => {console.error(err)});
         }
     }
 };

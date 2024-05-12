@@ -20,7 +20,23 @@
 </template>
 
 <script>
-
+export default{
+    data(){
+        return {
+            login: '',
+            password: ''
+        }
+    },
+    methods: {
+        handleLogin(){
+            const user = {
+                login: this.login,
+                password: this.password                
+            }
+            this.$store.dispatch('LOGIN_USER', user).then(() => {this.$router.push('/')}).catch((err) => {console.error(err)});
+        }
+    }
+}
 </script>
 
 <style scoped>

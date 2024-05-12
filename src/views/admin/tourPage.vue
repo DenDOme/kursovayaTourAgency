@@ -3,16 +3,30 @@
         
         <div class="container">
             <div class="login">
-                <h1 class="login__title">Авторизация</h1>
-                <form class="form" @submit.prevent="handleLogin">
-                    <input type="text" v-model="login" class="form__input" placeholder="Логин">
-                    <input type="password" v-model="password" class="form__input" placeholder="Пароль">
-                    <button type="submit" class="form__button">Войти</button>
+                <h1 class="login__title">Создание тура</h1>
+                <form class="form" @submit.prevent="handleCreateTour">
+                    <select class="form__input form__select" v-model="selectedCountry" name="" id="">
+                        <option value="" >Страна</option>
+                        <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
+                    </select>
+                    <input type="text" v-model="route" class="form__input" placeholder="Маршрут">
+                    <select class="form__input form__select" v-model="selectedTicket" name="" id="">
+                        <option value="" >Билет</option>
+                        <option v-for="ticket in tickets" :key="ticket.id" :value="ticket.id">{{ ticket.name }}</option>
+                    </select>
+                    <input type="text" v-model="description" class="form__input" placeholder="Описание">
+                    <select class="form__input form__select" v-model="selectedOperator" name="" id="">
+                        <option value="" >Тур Оператор</option>
+                        <option v-for="operator in tourOperators" :key="operator.id" :value="operator.id">{{ operator.name }}</option>
+                    </select>
+                    <select class="form__input form__select" v-model="selectedHotel" name="" id="">
+                        <option value="" >Отель</option>
+                        <option v-for="hotel in hotels" :key="hotel.id" :value="hotel.id">{{ hotel.name }}</option>
+                    </select>
+                    <input type="file" ref="fileInput" @change="handleFileUpload">
+                    <button type="submit" class="form__button">Создать</button>
                 </form>
-                <div class="login__bottom">
-                    <p class="login__text">Нет аккаунта?</p>
-                    <router-link to="/register" class="login__link">Зарегистрироваться</router-link>
-                </div>
+                
             </div>
         </div>
         
@@ -20,6 +34,48 @@
 </template>
 
 <script>
+export default{
+    data(){
+        return {
+            route: '',
+            description: '',
+            countries: [],
+            selectedCountry: '',
+            tickets: [],
+            selectedTicket: '',
+            tourOperators: [],
+            selectedOperator: '',
+            hotels: [],
+            selectedHotel: '',
+            imageFile: null
+        }
+    },
+    created(){
+        this.fetchData();
+    },
+    methods:{
+        async fetchData(){
+            this.countries = await this.$store.dispatch('GET_COUNTRIES');
+            this.tickets = await this.$store.dispatch('GET_TICKETS');
+            this.hotels = await this.$store.dispatch('GET_HOTELS');
+            this.tourOperators = await this.$store.dispatch('GET_TOUROPERATORS');
+        },
+        handleFileUpload(event) {
+            this.imageFile = event.target.files[0];
+        },
+        handleCreateTour(){
+            const formData = new FormData();
+            formData.append('country_id', this.selectedCountry);
+            formData.append('route', this.route);
+            formData.append('ticket_id', this.selectedTicket);
+            formData.append('description', this.description);
+            formData.append('tour_operator_id', this.selectedOperator);
+            formData.append('hotel_id', this.selectedHotel);
+            formData.append('img', this.imageFile);
+            this.$store.dispatch('ADD_TOUR',formData).then(() => this.$router.push('/add-tour')).catch((err) => {console.error(err)});
+        }
+    }
+}
 
 </script>
 

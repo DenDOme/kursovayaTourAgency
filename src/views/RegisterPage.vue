@@ -23,7 +23,29 @@
 </template>
 
 <script>
-
+export default{
+    data(){
+        return{
+            surname : '',
+            name: '',
+            patronym: '',
+            login: '',
+            password: ''
+        }
+    },
+    methods: {
+        handleRegister(){
+            const data = {
+                surname : this.surname,
+                name: this.name,
+                patronym: this.patronym,
+                login: this.login,
+                password: this.password
+            }
+            this.$store.dispatch('REGISTER_USER', data).then(() => {this.$router.push('/')}).catch(() => {console.error(err)});
+        }
+    }
+}
 </script>
 
 <style scoped>
