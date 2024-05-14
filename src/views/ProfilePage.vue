@@ -139,14 +139,35 @@ export default {
             likedData: [],
             comparisonData: [],
             ticketsData: [],
+            surname: '',
+            name: '',
+            patronym: '',
+            login: '',
+            password: '',
         }
     },
     created(){
-        
+        this.fetchData();
     },
     methods: {
         changeTab(index){
             this.currentTab = index;
+        },
+        async fetchData(){
+            this.likedData = await this.$store.dispatch('GET_LIKEDS');
+            this.ticketsData = await this.$store.dispatch('GET_TICKETS');
+            this.comparisonData = await this.$store.dispatch('GET_COMPARISONS');
+        },
+        async handleProfile(){
+            const user = {
+                surname: this.surname,
+                name: this.name,
+                patronym: this.patronym,
+                login: this.login,
+                password: this.password,
+            }
+            await this.$store.dispatch('UPDATE_USER', user);
+            await this.$store.dispatch('GET_USER');
         }
     }
 }

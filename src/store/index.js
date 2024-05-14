@@ -15,7 +15,8 @@ export default createStore({
         isAuthenticated: (state) => !!state.user.token,
         getUserData(state){
             return state.user.data
-        }
+        },
+        isAdmin: (state) => state.user.data.role == 'admin'
     },
     mutations: {
         SET_USER: (state, user) => {
@@ -24,7 +25,7 @@ export default createStore({
             sessionStorage.setItem('TOKEN', user.token);
         },
         SET_DATA: (state, user) => {
-            state.user.data = user.data;
+            state.user.data = user;
         },
         REMOVE_USER: (state) => {
             state.user = null;
@@ -39,6 +40,14 @@ export default createStore({
                 password: user.password
             })
             commit('SET_USER', response.data);
+        },
+        async GET_USER({commit, state}){
+            const res = await axios.get('http://localhost:8000/api/user' ,{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+            commit('SET_DATA', res.data);
         },
         async REGISTER_USER({commit}, user) {
             await axios.get("http://localhost:8000/sanctum/csrf-cookie");
@@ -124,6 +133,47 @@ export default createStore({
             const res = await axios.post('http://localhost:8000/api/tours',data,{
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+        },
+        async GET_PRODUCTS(){
+            const res = await axios.get('http://localhost:8000/api/get-tours')
+            return res.data;
+        },
+        async GET_LIKEDS({state}){
+            const res = await axios.get('http://localhost:8000/api/get-like',{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            })
+            return res.data;
+        },
+        async GET_COMPARISONS({state}){
+            const res = await axios.get('http://localhost:8000/api/get-comparison',{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            })
+            return res.data;
+        },
+        async ADD_LIKE({state}, id){
+            const res = await axios.post(`http://localhost:8000/api/add-like/${id}`,null, {
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+        },
+        async REMOVE_LIKE({state}, id){
+            const res = await axios.delete(`http://localhost:8000/api/remove-like/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+        },
+        async UPDATE_USER({commit, state},user){
+            const res = await axios.put('http://localhost:8000/api/profile',user,{
+                headers: {
                     'Authorization': `Bearer ${state.user.token}`
                 }
             });

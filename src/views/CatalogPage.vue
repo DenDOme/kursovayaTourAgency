@@ -18,59 +18,17 @@
 
             <div class="catalog__wrapper">
                 <div class="catalog__items">
-                    <div class="item">
-                        <img src="../assets/imgs/item-decoy.png" alt="" class="item__img">
+                    <div v-for="product in products" :key="product.id" class="item">
+                        <img :src="handleImgRender(product.img)" :alt="product.route" class="item__img">
                         <div class="text__row">
                             <div class="text__left">
-                                <h2 class="text__left-title">Название</h2>
-                                <p class="text__left-county">Страна</p>
+                                <h2 class="text__left-title">{{ product.route }}</h2>
+                                <p class="text__left-county">{{ product.country_id }}</p>
                             </div>
                             <div class="text__right">
-                                <button v-if="liked" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
-                                <button v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
-                                <router-link class="catalog__link" :to="'/catalog/'+  '1'">купить</router-link>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img src="../assets/imgs/item-decoy.png" alt="" class="item__img">
-                        <div class="text__row">
-                            <div class="text__left">
-                                <h2 class="text__left-title">Название</h2>
-                                <p class="text__left-county">Страна</p>
-                            </div>
-                            <div class="text__right">
-                                <button v-if="liked" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
-                                <button v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
-                                <router-link class="catalog__link" :to="'/catalog/'+  '1'">купить</router-link>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img src="../assets/imgs/item-decoy.png" alt="" class="item__img">
-                        <div class="text__row">
-                            <div class="text__left">
-                                <h2 class="text__left-title">Название</h2>
-                                <p class="text__left-county">Страна</p>
-                            </div>
-                            <div class="text__right">
-                                <button v-if="liked" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
-                                <button v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
-                                <router-link class="catalog__link" :to="'/catalog/'+  '1'">купить</router-link>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img src="../assets/imgs/item-decoy.png" alt="" class="item__img">
-                        <div class="text__row">
-                            <div class="text__left">
-                                <h2 class="text__left-title">Название</h2>
-                                <p class="text__left-county">Страна</p>
-                            </div>
-                            <div class="text__right">
-                                <button v-if="liked" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
-                                <button v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
-                                <router-link class="catalog__link" :to="'/catalog/'+  '1'">купить</router-link>
+                                <button @click="unlikeItem(product.id)" v-if="isLiked(product.id)" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
+                                <button @click="likeItem(product.id)" v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
+                                <router-link class="catalog__link" :to="'/catalog/'+ product.id">купить</router-link>
                             </div>
                         </div>
                     </div>
@@ -84,8 +42,42 @@
 export default{
     data(){
         return {
-            liked: true
+            search: '',
+            products: [],
+            likeds: []
         }
+    },
+    created(){
+        this.fetchLiked();
+        this.fetchCatalog();
+    },
+    methods: {
+        async fetchCatalog(){
+            const res = await this.$store.dispatch('GET_PRODUCTS');
+            this.products = res
+        },
+        async fetchLiked(){
+            const res = await this.$store.dispatch('GET_LIKEDS');
+            this.likeds = res
+        },
+        handleImgRender(img){
+            return 'http://localhost:8000/storage/' + img
+        },
+        isLiked(productId) {
+            return this.likeds.some(item => item.tour_id === productId);
+        },
+        async likeItem(id){
+            const res = await this.$store.dispatch('ADD_LIKE', id);
+            this.fetchLiked;
+        },
+        async unlikeItem(id){
+            const index = this.likeds.findIndex(item => item.tour_id === id);
+            if (index !== -1) {
+                const removedItem = this.likeds.splice(index, 1)[0];
+                const res = await this.$store.dispatch('REMOVE_LIKE', removedItem.id);
+                await this.fetchLiked();
+            }
+        },
     }
 }
 </script>

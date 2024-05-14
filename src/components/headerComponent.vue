@@ -18,11 +18,6 @@
 <script>
 export default {
     name: 'headerComponent',
-    data(){
-        return{
-            UserAuthed: null,
-        }
-    },
     computed:{
         UserAuthed(){
             return this.$store.getters.isAuthenticated
