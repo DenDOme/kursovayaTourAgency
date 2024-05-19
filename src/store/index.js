@@ -137,7 +137,7 @@ export default createStore({
                 }
             });
         },
-        async GET_PRODUCTS(){
+        async GET_TOURS(){
             const res = await axios.get('http://localhost:8000/api/get-tours')
             return res.data;
         },
@@ -173,6 +173,78 @@ export default createStore({
         },
         async UPDATE_USER({commit, state},user){
             const res = await axios.put('http://localhost:8000/api/profile',user,{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+        },
+        async GET_COUNTRY(){
+            const res = await axios.get('http://localhost:8000/api/get-countries');
+            return res.data;
+        },
+        async GET_TICKET(){
+            const res = await axios.get('http://localhost:8000/api/get-tickets');
+            return res.data;
+        },
+        async GET_HOTEL(){
+            const res = await axios.get('http://localhost:8000/api/get-hotels');
+            return res.data;
+        },
+        async GET_OPERATOR(){
+            const res = await axios.get('http://localhost:8000/api/get-operators');
+            return res.data;
+        },
+        async SEARCH_PRODUCT({state}, text){
+            const res = await axios.get('http://localhost:8000/api/search-tour',{
+                params:{
+                    search: text,
+                }
+            });
+            return res.data;
+        },
+        async GET_ONE_TOUR({state},id){
+            const res = await axios.get(`http://localhost:8000/api/get-one-tour/${id}`);
+            return res.data;
+        },
+        async GET_ONE_COMPARISON({state},id){
+            const res = await axios.get(`http://localhost:8000/api/get-one-comparison/${id}`,{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+            return res.data;
+        },
+        async GET_ONE_OWNER({state},id){
+            const res = await axios.get(`http://localhost:8000/api/get-one-owner/${id}`,{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+            return res.data;
+        },
+        async ADD_TICKET_OWNER({state}, id){
+            await axios.post(`http://localhost:8000/api/add-ticket/${id}`,null,{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+        },
+        async REMOVE_TICKET_OWNER({state}, id){
+            await axios.delete(`http://localhost:8000/api/remove-ticket/${id}`,{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+        },
+        async ADD_COMPARISON({state}, id){
+            await axios.post(`http://localhost:8000/api/add-comparison/${id}`,null,{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            });
+        },
+        async REMOVE_COMPARISON({state}, id){
+            await axios.delete(`http://localhost:8000/api/remove-comparison/${id}`,{
                 headers: {
                     'Authorization': `Bearer ${state.user.token}`
                 }

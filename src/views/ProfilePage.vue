@@ -29,17 +29,16 @@
                 <div v-if="currentTab === 1" class="liked__tab">
                     <div class="liked__wrapper">
                         <div class="liked__items">
-                            <div class="liked__item">
-                                <img src="../assets/imgs/item-decoy.png" alt="" class="item__img">
+                            <div v-for="product in items" :key="product.id" class="liked__item">
+                                <img :src="handleImg(product.img)" :alt="product.route" class="item__img">
                                 <div class="text__row">
                                     <div class="text__left">
-                                        <h2 class="text__left-title">Название</h2>
-                                        <p class="text__left-county">Страна</p>
+                                        <h2 class="text__left-title">{{ product.route }}</h2>
+                                        <p class="text__left-county">{{ product.country_id.name }}</p>
                                     </div>
                                     <div class="text__right">
-                                        <button v-if="liked" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
-                                        <button v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
-                                        <router-link class="liked__link" :to="'/catalog/'+  '1'">купить</router-link>
+                                        <button @click="unlikeItem(product.id)" v-show="this.$store.getters.isAuthenticated" v-if="isLiked(product.id)" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
+                                        <router-link class="liked__link" :to="'/catalog/'+ product.id">купить</router-link>
                                     </div>
                                 </div>
                             </div>
@@ -49,12 +48,39 @@
                 <div v-if="currentTab === 2" class="comparison__tab">
                     <div class="comparison__wrapper">
                         <div class="comparison__items">
-                            <div class="comparison__item">
-                                <img src="../assets/imgs/item-decoy.png" alt="" class="item__img">
+                            <div v-for="product in items" :key="product.id" class="comparison__item">
+                                <img :src="handleImg(product.img)" :alt="product.route" class="item__img">
                                 <div class="text">
                                     <button class="delete__button">Удалить</button>
-                                    <h2 class="text__item">Название</h2>
-                                    <p class="text__item">Страна</p>
+                                    <p class="item__label">Тур:</p>
+                                    <p class="item__text">{{ product.route }}</p>
+
+                                    <p class="item__label">Страна:</p>
+                                    <p class="item__text">{{ product.country_id.name }}</p>
+
+                                    <p class="item__label">Виза:</p>
+                                    <p class="item__text">{{ product.country_id.vise }}</p>
+
+                                    <p class="item__label">Название отеля:</p>
+                                    <p class="item__text">{{ product.hotel_id.name }}</p>
+
+                                    <p class="item__label">Адрес отеля:</p>
+                                    <p class="item__text">{{ product.hotel_id.address }}</p>
+
+                                    <p class="item__label">Инфо отеля:</p>
+                                    <p class="item__text">{{ product.hotel_id.info }}</p>
+
+                                    <p class="item__label">Имя тур оператора:</p>
+                                    <p class="item__text">{{ product.tour_operator_id.name }}</p>
+
+                                    <p class="item__label">Фамилия тур оператора:</p>
+                                    <p class="item__text">{{ product.tour_operator_id.surname }}</p>
+
+                                    <p class="item__label">Отчество тур оператора:</p>
+                                    <p class="item__text">{{ product.tour_operator_id.patronym }}</p>
+
+                                    <p class="item__label">Контакты тур оператора:</p>
+                                    <p class="item__text">{{ product.tour_operator_id.contacts }}</p>
                                 </div>
                             </div>
                         </div>
@@ -135,10 +161,13 @@
 export default {
     data(){
         return{
+            items: {},
             currentTab: 0,
             likedData: [],
+            tourData: [],
             comparisonData: [],
             ticketsData: [],
+            ownerData: [],
             surname: '',
             name: '',
             patronym: '',
@@ -152,12 +181,45 @@ export default {
     methods: {
         changeTab(index){
             this.currentTab = index;
+            this.filter();
+        },
+        handleImg(img){
+            return 'http://localhost:8000/storage/' + img;
         },
         async fetchData(){
+            this.tourData = await this.$store.dispatch('GET_TOURS');
             this.likedData = await this.$store.dispatch('GET_LIKEDS');
+            this.ownerData = await this.$store.dispatch('GET_OWNERS');
             this.ticketsData = await this.$store.dispatch('GET_TICKETS');
             this.comparisonData = await this.$store.dispatch('GET_COMPARISONS');
+
+            this.filterLikedTours();
         },
+
+        filter(){
+            if(this.currentTab === 1){
+                this.items = this.tourData.filter(tour => {
+                    return this.likedData.some(liked => liked.tour_id === tour.id);
+                });
+            }
+            if(this.currentTab === 2){
+                this.items = this.tourData.filter(tour => {
+                    return this.comparisonData.some(comparison => comparison.tour_id === tour.id);
+                });
+            }
+            if(this.currentTab === 3){
+                this.items = this.ticketsData.filter(ticket => {
+                    return this.ownerData.some(owner => owner.ticket_id === ticket.id);
+                })
+            }
+        },
+
+        filterLikedTours() {
+            this.items = this.tourData.filter(tour => {
+                return this.likedData.some(liked => liked.tour_id === tour.id);
+            });
+        },
+
         async handleProfile(){
             const user = {
                 surname: this.surname,
@@ -168,7 +230,18 @@ export default {
             }
             await this.$store.dispatch('UPDATE_USER', user);
             await this.$store.dispatch('GET_USER');
-        }
+        },
+        isLiked(productId) {
+            return this.likedData.some(item => item.tour_id === productId);
+        },
+        async unlikeItem(id) {
+            const index = this.likedData.findIndex(item => item.tour_id === id);
+            if (index !== -1) {
+                const removedItem = this.likedData.splice(index, 1)[0];
+                const res = await this.$store.dispatch('REMOVE_LIKE', removedItem.id);
+                this.fetchData();
+            }
+        },
     }
 }
 </script>
@@ -398,5 +471,9 @@ export default {
     }
     .form__input-small{
         max-width: 150px ;
+    }
+    .item__label {
+        font-weight: bold;
+        margin-bottom: 5px;
     }
 </style>

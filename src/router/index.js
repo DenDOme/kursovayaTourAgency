@@ -93,7 +93,6 @@ async function checkRole(to, from, next) {
   }
 }
 
-
 router.beforeEach((to, from, next) => {
   if(to.meta.requireAuth && !store.state.user.token) {
     next({name: 'login'});

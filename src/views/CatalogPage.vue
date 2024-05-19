@@ -9,25 +9,37 @@
             <form class="catalog__filter">
                 <div class="catalog__filter-inputs">    
                     <h2 class="catalog__filter-title">Фильтр</h2>
-                    <input type="text" name="" id="">
-                    <input type="text" name="" id="">
-                    <input type="text" name="" id="">
-                    <input type="text" name="" id="">
+                    <select @change="handleFilter" class="form__input form__select" v-model="selectedCountry" name="" id="">
+                        <option value="" >Страна</option>
+                        <option v-for="country in filterCountry" :key="country.id" :value="country.id">{{ country.name }}</option>
+                    </select>
+                    <select @change="handleFilter" class="form__input form__select" v-model="selectedTicket" name="" id="">
+                        <option value="" >Билет</option>
+                        <option v-for="ticket in filterTicket" :key="ticket.id" :value="ticket.id">{{ ticket.name }}</option>
+                    </select>
+                    <select @change="handleFilter" class="form__input form__select" v-model="selectedOperator" name="" id="">
+                        <option value="" >Тур Оператор</option>
+                        <option v-for="operator in filterOperator" :key="operator.id" :value="operator.id">{{ operator.name }}</option>
+                    </select>
+                    <select @change="handleFilter" class="form__input form__select" v-model="selectedHotel" name="" id="">
+                        <option value="" >Отель</option>
+                        <option v-for="hotel in filterHotel" :key="hotel.id" :value="hotel.id">{{ hotel.name }}</option>
+                    </select>
                 </div>
             </form>
 
             <div class="catalog__wrapper">
                 <div class="catalog__items">
-                    <div v-for="product in products" :key="product.id" class="item">
+                    <div v-for="product in filteredProducts" :key="product.id" class="item">
                         <img :src="handleImgRender(product.img)" :alt="product.route" class="item__img">
                         <div class="text__row">
                             <div class="text__left">
                                 <h2 class="text__left-title">{{ product.route }}</h2>
-                                <p class="text__left-county">{{ product.country_id }}</p>
+                                <p class="text__left-county">{{ product.country_id.name }}</p>
                             </div>
                             <div class="text__right">
-                                <button @click="unlikeItem(product.id)" v-if="isLiked(product.id)" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
-                                <button @click="likeItem(product.id)" v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
+                                <button @click="unlikeItem(product.id)" v-show="this.$store.getters.isAuthenticated" v-if="isLiked(product.id)" class="like"><img src="../assets/imgs/heart.svg" alt=""></button>
+                                <button @click="likeItem(product.id)" v-show="this.$store.getters.isAuthenticated" v-else class="like"><img src="../assets/imgs/heart-active.svg" alt=""></button>
                                 <router-link class="catalog__link" :to="'/catalog/'+ product.id">купить</router-link>
                             </div>
                         </div>
@@ -44,17 +56,28 @@ export default{
         return {
             search: '',
             products: [],
-            likeds: []
+            filteredProducts: [],
+            likeds: [],
+            filterCountry: [],
+            selectedCountry: '',
+            filterOperator: [],
+            selectedOperator: '',
+            filterHotel: [],
+            selectedHotel: '',
+            filterTicket: [],
+            selectedTicket: '',
         }
     },
     created(){
+        this.fetchData();
         this.fetchLiked();
         this.fetchCatalog();
     },
     methods: {
         async fetchCatalog(){
-            const res = await this.$store.dispatch('GET_PRODUCTS');
+            const res = await this.$store.dispatch('GET_TOURS');
             this.products = res
+            this.filteredProducts = this.products
         },
         async fetchLiked(){
             const res = await this.$store.dispatch('GET_LIKEDS');
@@ -68,7 +91,7 @@ export default{
         },
         async likeItem(id){
             const res = await this.$store.dispatch('ADD_LIKE', id);
-            this.fetchLiked;
+            this.fetchLiked();
         },
         async unlikeItem(id){
             const index = this.likeds.findIndex(item => item.tour_id === id);
@@ -78,6 +101,39 @@ export default{
                 await this.fetchLiked();
             }
         },
+        async handleSearch(){
+            const text = typeof this.search === 'string' ? this.search : '';
+            const res = await this.$store.dispatch('SEARCH_PRODUCT', text);
+            this.products = res;
+            this.filteredProducts = this.products
+        },
+        async handleFilter(){
+            let filtered = this.products;
+
+            if (this.selectedCountry !== '') {
+                filtered = filtered.filter(product => product.country_id.id === parseInt(this.selectedCountry));
+            }
+
+            if (this.selectedTicket !== '') {
+                filtered = filtered.filter(product => product.ticket_id.id === parseInt(this.selectedTicket));
+            }
+
+            if (this.selectedOperator !== '') {
+                filtered = filtered.filter(product => product.tour_operator_id.id === parseInt(this.selectedOperator));
+            }
+
+            if (this.selectedHotel !== '') {
+                filtered = filtered.filter(product => product.hotel_id.id === parseInt(this.selectedHotel));
+            }
+
+            this.filteredProducts = filtered;
+        },
+        async fetchData(){
+            this.filterCountry = await this.$store.dispatch('GET_COUNTRY');
+            this.filterHotel = await this.$store.dispatch('GET_HOTEL');
+            this.filterTicket = await this.$store.dispatch('GET_TICKET');
+            this.filterOperator = await this.$store.dispatch('GET_OPERATOR');
+        }
     }
 }
 </script>
@@ -166,7 +222,7 @@ export default{
     align-items: center;
     justify-content: center;
 }
-.catalog__filter-inputs input{
+.catalog__filter-inputs select{
     width: 20%;
     height: 30px;
     background: #4B4B4B;
