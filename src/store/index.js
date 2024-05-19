@@ -249,6 +249,14 @@ export default createStore({
                     'Authorization': `Bearer ${state.user.token}`
                 }
             });
+        },
+        async GET_OWNERS({state}){
+            const res = await axios.get('http://localhost:8000/api/get-ticket-owners',{
+                headers: {
+                    'Authorization': `Bearer ${state.user.token}`
+                }
+            })
+            return res.data;
         }
     },
     modules: {

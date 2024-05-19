@@ -51,7 +51,6 @@
                             <div v-for="product in items" :key="product.id" class="comparison__item">
                                 <img :src="handleImg(product.img)" :alt="product.route" class="item__img">
                                 <div class="text">
-                                    <button class="delete__button">Удалить</button>
                                     <p class="item__label">Тур:</p>
                                     <p class="item__text">{{ product.route }}</p>
 
@@ -70,17 +69,18 @@
                                     <p class="item__label">Инфо отеля:</p>
                                     <p class="item__text">{{ product.hotel_id.info }}</p>
 
-                                    <p class="item__label">Имя тур оператора:</p>
+                                    <p class="item__label">Имя тур<br>оператора:</p>
                                     <p class="item__text">{{ product.tour_operator_id.name }}</p>
 
-                                    <p class="item__label">Фамилия тур оператора:</p>
+                                    <p class="item__label">Фамилия тур<br>оператора:</p>
                                     <p class="item__text">{{ product.tour_operator_id.surname }}</p>
 
-                                    <p class="item__label">Отчество тур оператора:</p>
+                                    <p class="item__label">Отчество тур<br>оператора:</p>
                                     <p class="item__text">{{ product.tour_operator_id.patronym }}</p>
 
-                                    <p class="item__label">Контакты тур оператора:</p>
+                                    <p class="item__label">Контакты тур<br>оператора:</p>
                                     <p class="item__text">{{ product.tour_operator_id.contacts }}</p>
+                                    <button class="delete__button">Удалить</button>
                                 </div>
                             </div>
                         </div>
@@ -89,65 +89,12 @@
                 <div v-if="currentTab === 3" class="tickets__tab">
                     <div class="tickets__wrapper">
                         <div class="tickets__items">
-                            <div class="tickets__item">
-                                <h2 class="tickets__title">Название</h2>
-                                <div class="item__row">
-                                    <p class="item__text">Страна</p>
-                                    <p class="item__text">Страна</p>
-                                </div>
-                                <p class="item__text">Виза</p>
-                                <div class="item__row">
-                                    <p class="item__text">Цена</p>
-                                    <router-link :to="'/catalog/' + '1'" class="item__text item__link">Дополнительно</router-link>
-                                </div>
-                            </div>
-                            <div class="tickets__item">
-                                <h2 class="item__title">Название</h2>
-                                <div class="item__row">
-                                    <p class="item__text">Страна</p>
-                                    <p class="item__text">Страна</p>
-                                </div>
-                                <p class="item__text">Виза</p>
-                                <div class="item__row">
-                                    <p class="item__text">Цена</p>
-                                    <router-link :to="'/catalog/' + '1'" class="item__text item__link">Дополнительно</router-link>
-                                </div>
-                            </div>
-                            <div class="tickets__item">
-                                <h2 class="item__title">Название</h2>
-                                <div class="item__row">
-                                    <p class="item__text">Страна</p>
-                                    <p class="item__text">Страна</p>
-                                </div>
-                                <p class="item__text">Виза</p>
-                                <div class="item__row">
-                                    <p class="item__text">Цена</p>
-                                    <router-link :to="'/catalog/' + '1'" class="item__text item__link">Дополнительно</router-link>
-                                </div>
-                            </div>
-                            <div class="tickets__item">
-                                <h2 class="item__title">Название</h2>
-                                <div class="item__row">
-                                    <p class="item__text">Страна</p>
-                                    <p class="item__text">Страна</p>
-                                </div>
-                                <p class="item__text">Виза</p>
-                                <div class="item__row">
-                                    <p class="item__text">Цена</p>
-                                    <router-link :to="'/catalog/' + '1'" class="item__text item__link">Дополнительно</router-link>
-                                </div>
-                            </div>
-                            <div class="tickets__item">
-                                <h2 class="item__title">Название</h2>
-                                <div class="item__row">
-                                    <p class="item__text">Страна</p>
-                                    <p class="item__text">Страна</p>
-                                </div>
-                                <p class="item__text">Виза</p>
-                                <div class="item__row">
-                                    <p class="item__text">Цена</p>
-                                    <router-link :to="'/catalog/' + '1'" class="item__text item__link">Дополнительно</router-link>
-                                </div>
+                            <div v-for="ticketOwner in items" :key="ticketOwner.id" class="ticket__item">
+                                <p class="ticket__number">Номер билета: {{ ticketOwner.id }}</p>
+                                <p class="ticket__text">Название авиакомпании: {{ ticketOwner.name }}</p>
+                                <p class="ticket__text">Место: {{ ticketOwner.place }}</p>
+                                <p class="ticket__text">Дата: {{ ticketOwner.date }}</p>
+                                <button class="delete__button" @click="cancelTour(ticketOwner.id)">Отменить</button>
                             </div>
                         </div>
                     </div>
@@ -189,11 +136,11 @@ export default {
         async fetchData(){
             this.tourData = await this.$store.dispatch('GET_TOURS');
             this.likedData = await this.$store.dispatch('GET_LIKEDS');
+            this.comparisonData = await this.$store.dispatch('GET_COMPARISONS');
             this.ownerData = await this.$store.dispatch('GET_OWNERS');
             this.ticketsData = await this.$store.dispatch('GET_TICKETS');
-            this.comparisonData = await this.$store.dispatch('GET_COMPARISONS');
 
-            this.filterLikedTours();
+            this.filter();
         },
 
         filter(){
@@ -210,7 +157,7 @@ export default {
             if(this.currentTab === 3){
                 this.items = this.ticketsData.filter(ticket => {
                     return this.ownerData.some(owner => owner.ticket_id === ticket.id);
-                })
+                });
             }
         },
 
@@ -242,6 +189,10 @@ export default {
                 this.fetchData();
             }
         },
+        async cancelTour(id){
+            await this.$store.dispatch('REMOVE_TICKET_OWNER', id);
+            this.fetchData();
+        }
     }
 }
 </script>
@@ -312,14 +263,17 @@ export default {
     margin-bottom: 30px;
 }
 .comparison__items{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
     gap: 20px;
     padding: 25px;
     margin-top: 15px;
     color: #FFF;
 }
 .comparison__item{
+    width: 250px;
     background-color: #454545;
     padding: 20px;
 }
@@ -349,14 +303,13 @@ export default {
         color: #FFF;    
     }
     
-    .tickets__item{
+    .ticket__item{
         padding: 25px;
         background-color: #454545;
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
-
     .item__row{
         display: flex;
         align-items: center;
@@ -475,5 +428,13 @@ export default {
     .item__label {
         font-weight: bold;
         margin-bottom: 5px;
+    }
+    .item__text{
+        width: 250px;
+    }
+    .delete__button{
+        padding: 5px 0;
+        font-size: 16px;
+        font-weight: 500;
     }
 </style>

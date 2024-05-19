@@ -10,7 +10,9 @@ import hotelPage from '@/views/admin/hotelPage.vue';
 import ticketPage from '@/views/admin/ticketPage.vue';
 import tourPage from '@/views/admin/tourPage.vue';
 import tourOperatorPage from '@/views/admin/tourOperatorPage.vue';
+import adminPanelPage from '@/views/admin/adminPanelPage.vue';
 import itemPage from '@/views/itemPage.vue';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,7 +82,15 @@ const router = createRouter({
       beforeEnter: checkRole,
       meta: {requireAuth: true},
       component: tourPage
-    }
+    },
+    {
+      path: '/admin-panel',
+      name: 'adminPanel',
+      beforeEnter: checkRole,
+      meta: {requireAuth: true},
+      component: adminPanelPage
+    },
+    
   ]
 })
 
