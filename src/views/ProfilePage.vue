@@ -346,6 +346,8 @@ export default {
         align-items: center;
         justify-content: space-around;
         background-color: #232323;
+        overflow-x: auto;
+        gap: 20px
     }
     
     .profile__menu-tab{
@@ -437,4 +439,15 @@ export default {
         font-size: 16px;
         font-weight: 500;
     }
+@media screen and (max-width:500px) {
+    .form__input{
+        font-size: 20px;
+    }
+}
+@media screen and (max-width:420px) {
+    .profile__form{
+        margin: 20px 0;
+        padding: 31px;
+    }
+}
 </style>

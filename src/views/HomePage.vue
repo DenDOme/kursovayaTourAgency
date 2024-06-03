@@ -152,4 +152,18 @@
     transform: translate(-50%, -50%);
     font-weight: 700;
 }
+
+@media screen and (max-width:800px) {
+    .about__row, .about__row:nth-child(2){
+        gap: 20px;
+        flex-direction: column;
+    }
+    .about__img{
+        width: 100%;
+    }
+    .text__subtitle, .about__row:nth-child(2) .text__subtitle{
+        text-align: center;
+    }
+}
+
 </style>

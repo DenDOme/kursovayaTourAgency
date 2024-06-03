@@ -219,4 +219,31 @@ export default{
     font-weight: bold;
     margin-bottom: 5px;
 }
+@media screen and (max-width:950px) {
+    .item__right{
+        width: auto;
+    }
+}
+@media screen and (max-width:750px) {
+    .item__top{
+        flex-direction: column;
+        align-items: center;
+    }
+    .item__left{
+        width: auto;
+    }
+    .item__right{
+        width: 100%;
+        max-width: 100%;
+    }
+}
+@media screen and (max-width:600px) {
+    .item__bottom-ticket, .ticket__row{
+        gap: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 16px;
+    }
+}
 </style>

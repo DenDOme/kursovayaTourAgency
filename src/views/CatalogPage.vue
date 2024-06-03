@@ -255,5 +255,14 @@ export default{
     align-items: center;
     justify-content: center;
 }
-
+@media screen and (max-width:620px) {
+    .catalog__filter-inputs{
+        flex-direction: column;
+    }
+    .catalog__filter-inputs select{
+        max-width: 100%;
+        width: 80%;
+        border-bottom: 1px solid #fff;
+    }
+}
 </style>

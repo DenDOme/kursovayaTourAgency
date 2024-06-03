@@ -123,4 +123,15 @@ export default{
     .register__link{
         color: #0C73FE;
     }
+@media screen and (max-width:500px) {
+    .form__input{
+        font-size: 20px;
+    }
+}
+@media screen and (max-width:420px) {
+    .register{
+        margin: 20px 0;
+        padding: 31px;
+    }
+}
 </style>

@@ -103,4 +103,9 @@ export default{
     .login__link{
         color: #0C73FE;
     }
+@media screen and (max-width:420px) {
+    .login{
+        padding: 31px;
+    }
+}
 </style>
