@@ -5,9 +5,18 @@
             <div class="login">
                 <h1 class="login__title">Создание билета</h1>
                 <form class="form" @submit.prevent="handleCreateTicket">
-                    <input type="text" v-model="name" class="form__input" placeholder="Название">
-                    <input type="date" v-model="date" class="form__input" placeholder="Дата">
-                    <input type="string" v-model="place" class="form__input" placeholder="место №">
+                    <div class="form__group">
+                        <input type="text" v-model="name" class="form__input" placeholder="Название">
+                        <span v-if="errors.name" class="error-text">{{ errors.name[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="date" v-model="date" class="form__input" placeholder="Дата">
+                        <span v-if="errors.date" class="error-text">{{ errors.date[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="string" v-model="place" class="form__input" placeholder="место №">
+                        <span v-if="errors.place" class="error-text">{{ errors.place[0] }}</span>
+                    </div>
                     <button type="submit" class="form__button">Создать</button>
                 </form>
             </div>
@@ -22,17 +31,19 @@ export default{
         return{
             name: '',
             date: '',
-            place: ''
+            place: '',
+            errors: {},
         }
     },
     methods: {
-        handleCreateTicket(){   
+        handleCreateTicket(){
+            this.errors = {};   
             const ticket = {
                 name: this.name,
                 date: this.date,
                 place: this.place
             }
-            this.$store.dispatch('ADD_TICKET',ticket).then(() => {this.$router.push('/add-ticket')});
+            this.$store.dispatch('ADD_TICKET',ticket).then(() => {this.$router.go(0)}).catch((err) => {this.errors = err.response.data.errors});
         }
     }
 }
@@ -72,7 +83,6 @@ export default{
         font-size: 24px;
         color: #fff;
         background-color: #232323;
-        margin-bottom: 30px;
     }
     .form__button{
         max-width: 320px;

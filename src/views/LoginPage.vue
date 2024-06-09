@@ -5,8 +5,15 @@
             <div class="login">
                 <h1 class="login__title">Авторизация</h1>
                 <form class="form" @submit.prevent="handleLogin">
-                    <input type="text" v-model="login" class="form__input" placeholder="Логин">
-                    <input type="password" v-model="password" class="form__input" placeholder="Пароль">
+                    <div class="form__group">
+                        <input type="text" v-model="login" class="form__input" placeholder="Логин">
+                        <span v-if="errors.login" class="error-text">{{ errors.login[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="password" v-model="password" class="form__input" placeholder="Пароль">
+                        <span v-if="errors.password" class="error-text">{{ errors.password[0] }}</span>
+                        <span v-if="passwordError" class="error-text">{{ passwordError }}</span>
+                    </div>
                     <button type="submit" class="form__button">Войти</button>
                 </form>
                 <div class="login__bottom">
@@ -24,16 +31,27 @@ export default{
     data(){
         return {
             login: '',
-            password: ''
+            password: '',
+            errors: {},
+            passwordError: ''
         }
     },
     methods: {
         handleLogin(){
+            this.errors = {};
+            this.passwordError = '';
             const user = {
                 login: this.login,
                 password: this.password                
             }
-            this.$store.dispatch('LOGIN_USER', user).then(() => {this.$router.push('/')}).catch((err) => {console.error(err)});
+            this.$store.dispatch('LOGIN_USER', user).then(() => {this.$router.push('/')}).catch((err) => {
+                if(err.response.data.status === false){
+                    this.passwordError = err.response.data.errors
+                }
+                else{
+                    this.errors = err.response.data.errors
+                }
+            });
         }
     }
 }
@@ -73,7 +91,6 @@ export default{
         font-size: 24px;
         color: #fff;
         background-color: #232323;
-        margin-bottom: 30px;
     }
     .form__button{
         max-width: 320px;

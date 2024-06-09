@@ -5,8 +5,14 @@
             <div class="login">
                 <h1 class="login__title">Создание страны</h1>
                 <form class="form" @submit.prevent="handleCreateCountry">
-                    <input type="text" v-model="name" class="form__input" placeholder="Имя">
-                    <input type="text" v-model="vise" class="form__input" placeholder="Виза">
+                    <div class="form__group">
+                        <input type="text" v-model="name" class="form__input" placeholder="Имя">
+                        <span v-if="errors.name" class="error-text">{{ errors.name[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="text" v-model="vise" class="form__input" placeholder="Виза">
+                        <span v-if="errors.vise" class="error-text">{{ errors.vise[0] }}</span>
+                    </div>
                     <button type="submit" class="form__button">Создать</button>
                 </form>
             </div>
@@ -21,15 +27,17 @@ export default{
         return{
             name: '',
             vise: '',
+            errors: {}
         }
     },
     methods: {
         handleCreateCountry(){
+            this.errors = {};
             const country = {
                 name: this.name,
                 vise: this.vise
             }
-            this.$store.dispatch('ADD_COUNTRY',country).then(() => {this.$router.push('/add-country')}).catch((err) => {console.error(err)});
+            this.$store.dispatch('ADD_COUNTRY',country).then(() => {this.$router.go(0)}).catch((err) => {this.errors = err.response.data.errors});
         }
     }
 }
@@ -69,7 +77,7 @@ export default{
         font-size: 24px;
         color: #fff;
         background-color: #232323;
-        margin-bottom: 30px;
+
     }
     .form__button{
         max-width: 320px;

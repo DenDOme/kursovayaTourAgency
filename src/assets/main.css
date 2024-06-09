@@ -29,3 +29,17 @@ body{
     padding: 0 25px;
     margin: 0 auto;
 }
+
+.form__group{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.error-text{
+    color: rgb(185, 0, 0);
+    font-size: 14px;
+    font-weight: 600;
+}

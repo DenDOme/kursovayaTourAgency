@@ -6,9 +6,18 @@
                 <h1 class="login__title">Создание отеля</h1>
 
                 <form class="form" @submit.prevent="handleCreateHotel">
-                    <input type="text" v-model="name" class="form__input" placeholder="Имя">
-                    <input type="text" v-model="address" class="form__input" placeholder="Адресс">
-                    <input type="text" v-model="info" class="form__input" placeholder="Информация">
+                    <div class="form__group">
+                        <input type="text" v-model="name" class="form__input" placeholder="Имя">
+                        <span v-if="errors.name" class="error-text">{{ errors.name[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="text" v-model="address" class="form__input" placeholder="Адресс">
+                        <span v-if="errors.address" class="error-text">{{ errors.address[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="text" v-model="info" class="form__input" placeholder="Информация">
+                        <span v-if="errors.info" class="error-text">{{ errors.info[0] }}</span>
+                    </div>
                     <button type="submit" class="form__button">Создать</button>
                 </form>
 
@@ -24,17 +33,19 @@ export default{
         return{
             name: '',
             address: '',
-            info: ''
+            info: '',
+            errors: {}
         }
     },
     methods: {  
         handleCreateHotel(){
+            this.errors = {};
             const hotel = {
                 name: this.name,
                 address: this.address,
                 info: this.info
             }
-            this.$store.dispatch('ADD_HOTEL',hotel).then(() => {this.$router.push('/add-hotel')}).catch((err) => {console.error(err)});
+            this.$store.dispatch('ADD_HOTEL',hotel).then(() => {this.$router.go(0)}).catch((err) => {this.errors = err.response.data.errors});
         }
     }
 }
@@ -74,7 +85,6 @@ export default{
         font-size: 24px;
         color: #fff;
         background-color: #232323;
-        margin-bottom: 30px;
     }
     .form__button{
         max-width: 320px;

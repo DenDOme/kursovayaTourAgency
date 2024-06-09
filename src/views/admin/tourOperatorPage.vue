@@ -6,10 +6,22 @@
                 <h1 class="login__title">Создание тур оператора</h1>
 
                 <form class="form" @submit.prevent="handleCreateTourOperator">
-                    <input type="text" v-model="name" class="form__input" placeholder="Имя">
-                    <input type="text" v-model="surname" class="form__input" placeholder="Фамилия">
-                    <input type="text" v-model="patronym" class="form__input" placeholder="Отчество">
-                    <input type="text" v-model="contacts" class="form__input" placeholder="Контакты">
+                    <div class="form__group">
+                        <input type="text" v-model="name" class="form__input" placeholder="Имя">
+                        <span v-if="errors.name" class="error-text">{{ errors.name[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="text" v-model="surname" class="form__input" placeholder="Фамилия">
+                        <span v-if="errors.surname" class="error-text">{{ errors.surname[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="text" v-model="patronym" class="form__input" placeholder="Отчество">
+                        <span v-if="errors.patronym" class="error-text">{{ errors.patronym[0] }}</span>
+                    </div>
+                    <div class="form__group">
+                        <input type="text" v-model="contacts" class="form__input" placeholder="Контакты">
+                        <span v-if="errors.contacts" class="error-text">{{ errors.contacts[0] }}</span>
+                    </div>
                     <button type="submit" class="form__button">Создать</button>
                 </form>
             </div>
@@ -25,18 +37,20 @@ export default{
             name: '',
             surname: '',
             patronym: '',
-            contacts: ''
+            contacts: '',
+            errors: {}
         }
     },
     methods: {
         handleCreateTourOperator(){
+            this.errors = {};
             const operator = {
                 name: this.name,
                 surname: this.surname,
                 patronym: this.patronym,
                 contacts: this.contacts
             }
-            this.$store.dispatch('ADD_TOUROPERATOR', operator).then(() => {this.$router.push('/add-operator')})
+            this.$store.dispatch('ADD_TOUROPERATOR', operator).then(() => {this.$router.go(0)}).catch((err) => {this.errors = err.response.data.errors});
         }
     }
 }
@@ -76,7 +90,6 @@ export default{
         font-size: 24px;
         color: #fff;
         background-color: #232323;
-        margin-bottom: 30px;
     }
     .form__button{
         max-width: 320px;

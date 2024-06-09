@@ -12,7 +12,7 @@ export default createStore({
         }
     },
     getters: {
-        isAuthenticated: (state) => !!state.user.token,
+        isAuthenticated: (state) => !!state.user?.token,
         getUserData(state){
             return state.user.data
         },
